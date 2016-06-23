@@ -33,9 +33,8 @@ public class Main {
         character.setId(Integer.parseInt(xml.getElementsByTagName("id").item(0).getTextContent()));
         character.setName(xml.getElementsByTagName("name").item(0).getTextContent());
         character.setShard(xml.getElementsByTagName("shard").item(0).getTextContent());
-        character.setMoney(Integer.parseInt(xml.getElementsByTagName("money").item(0).getTextContent()));
+        //character.setMoney(Integer.parseInt(xml.getElementsByTagName("money").item(0).getTextContent()));
 
-        System.out.println();
         return character;
     }
 }

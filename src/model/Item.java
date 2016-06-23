@@ -1,5 +1,7 @@
 package model;
 
+import exceptions.ItemIsNotCraftedException;
+
 /**
  * Represents each item
  */
@@ -11,8 +13,7 @@ public class Item {
     private short hitPoints;// hp
     private int quantity;   // stack
 
-    private boolean isCrafted;
-    private CraftedItem craftParametrs;
+    private CraftedItem craftParameters;
 
     private boolean isLocked;
 
@@ -35,10 +36,11 @@ public class Item {
         return quantity;
     }
     public boolean isCrafted() {
-        return isCrafted;
+        return craftParameters != null;
     }
-    public CraftedItem getCraftParametrs() {
-        return craftParametrs;
+    public CraftedItem getCraftParameters() throws ItemIsNotCraftedException {
+        if (craftParameters != null) return craftParameters;
+        throw new ItemIsNotCraftedException("Current item is not crafted so can't return its crafted params.");
     }
 
     public boolean isLocked() {
@@ -63,9 +65,8 @@ public class Item {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-    public void setCraftParametrs(CraftedItem craftParametrs) {
-        isCrafted = true;
-        this.craftParametrs = craftParametrs;
+    public void setCraftParameters(CraftedItem craftParameters) {
+        this.craftParameters = craftParameters;
     }
 
     public void setLocked(boolean locked) {
@@ -83,9 +84,39 @@ public class Item {
         this.hitPoints = hitPoints;
         this.quantity = quantity;
 
-        isCrafted = false;
-        craftParametrs = null;
+        craftParameters = null;
 
         this.isLocked = isLocked;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Item item = (Item) o;
+
+        if (slot != item.slot) return false;
+        if (id != item.id) return false;
+        if (quality != item.quality) return false;
+        if (hitPoints != item.hitPoints) return false;
+        if (quantity != item.quantity) return false;
+        if (isLocked != item.isLocked) return false;
+        if (!name.equals(item.name)) return false;
+        return craftParameters != null ? craftParameters.equals(item.craftParameters) : item.craftParameters == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) slot;
+        result = 31 * result + (int) (id ^ (id >>> 32));
+        result = 31 * result + name.hashCode();
+        result = 31 * result + (int) quality;
+        result = 31 * result + (int) hitPoints;
+        result = 31 * result + quantity;
+        result = 31 * result + (craftParameters != null ? craftParameters.hashCode() : 0);
+        result = 31 * result + (isLocked ? 1 : 0);
+        return result;
     }
 }

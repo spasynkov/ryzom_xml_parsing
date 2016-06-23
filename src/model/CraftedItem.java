@@ -27,9 +27,9 @@ public class CraftedItem {
     private boolean isArmor;
     private boolean isJewel;
 
-    private Protection protection1;
-    private Protection protection2;
-    private Protection protection3;
+    private JewelsProtection jewelsProtection1;
+    private JewelsProtection jewelsProtection2;
+    private JewelsProtection jewelsProtection3;
 
     private Value desertResistanceFactor;
     private Value forestResistanceFactor;
@@ -43,7 +43,7 @@ public class CraftedItem {
     public CraftedItem() {
     }
 
-    public CraftedItem(Value durability, Value weight, float stateEnergy, Value dodgeModifier, Value parryModifier, short hpBoost, short sapBoost, short staminaBoost, short focusBoost, boolean isWeapon, Value sapLoad, Value damage, Value speed, Value adversaryDodgeModifier, Value adversaryParryModifier, boolean isArmor, boolean isJewel, Protection protection1, Protection protection2, Protection protection3, Value desertResistanceFactor, Value forestResistanceFactor, Value lakesResistanceFactor, Value jungleResistanceFactor, Value primaryRootsResistanceFactor, byte color) {
+    public CraftedItem(Value durability, Value weight, float stateEnergy, Value dodgeModifier, Value parryModifier, short hpBoost, short sapBoost, short staminaBoost, short focusBoost, boolean isWeapon, Value sapLoad, Value damage, Value speed, Value adversaryDodgeModifier, Value adversaryParryModifier, boolean isArmor, boolean isJewel, JewelsProtection jewelsProtection1, JewelsProtection jewelsProtection2, JewelsProtection jewelsProtection3, Value desertResistanceFactor, Value forestResistanceFactor, Value lakesResistanceFactor, Value jungleResistanceFactor, Value primaryRootsResistanceFactor, byte color) {
         this.durability = durability;
         this.weight = weight;
         this.stateEnergy = stateEnergy;
@@ -61,9 +61,9 @@ public class CraftedItem {
         this.adversaryParryModifier = adversaryParryModifier;
         this.isArmor = isArmor;
         this.isJewel = isJewel;
-        this.protection1 = protection1;
-        this.protection2 = protection2;
-        this.protection3 = protection3;
+        this.jewelsProtection1 = jewelsProtection1;
+        this.jewelsProtection2 = jewelsProtection2;
+        this.jewelsProtection3 = jewelsProtection3;
         this.desertResistanceFactor = desertResistanceFactor;
         this.forestResistanceFactor = forestResistanceFactor;
         this.lakesResistanceFactor = lakesResistanceFactor;
@@ -208,28 +208,28 @@ public class CraftedItem {
         isJewel = jewel;
     }
 
-    public Protection getProtection1() {
-        return protection1;
+    public JewelsProtection getJewelsProtection1() {
+        return jewelsProtection1;
     }
 
-    public void setProtection1(Protection protection1) {
-        this.protection1 = protection1;
+    public void setJewelsProtection1(JewelsProtection jewelsProtection1) {
+        this.jewelsProtection1 = jewelsProtection1;
     }
 
-    public Protection getProtection2() {
-        return protection2;
+    public JewelsProtection getJewelsProtection2() {
+        return jewelsProtection2;
     }
 
-    public void setProtection2(Protection protection2) {
-        this.protection2 = protection2;
+    public void setJewelsProtection2(JewelsProtection jewelsProtection2) {
+        this.jewelsProtection2 = jewelsProtection2;
     }
 
-    public Protection getProtection3() {
-        return protection3;
+    public JewelsProtection getJewelsProtection3() {
+        return jewelsProtection3;
     }
 
-    public void setProtection3(Protection protection3) {
-        this.protection3 = protection3;
+    public void setJewelsProtection3(JewelsProtection jewelsProtection3) {
+        this.jewelsProtection3 = jewelsProtection3;
     }
 
     public Value getDesertResistanceFactor() {
@@ -280,36 +280,7 @@ public class CraftedItem {
         this.color = color;
     }
 
-    public class Value {
-        private float inGameValue;
-        private float realValue;
-
-        public float getInGameValue() {
-            return inGameValue;
-        }
-
-        public void setInGameValue(float inGameValue) {
-            this.inGameValue = inGameValue;
-        }
-
-        public float getRealValue() {
-            return realValue;
-        }
-
-        public void setRealValue(float realValue) {
-            this.realValue = realValue;
-        }
-
-        public Value() {
-        }
-
-        public Value(float inGameValue, float realValue) {
-            this.inGameValue = inGameValue;
-            this.realValue = realValue;
-        }
-    }
-
-    public class Protection {
+    public class JewelsProtection {
         private String type;
         private Value value;
 
@@ -329,10 +300,10 @@ public class CraftedItem {
             this.value = value;
         }
 
-        public Protection() {
+        public JewelsProtection() {
         }
 
-        public Protection(String type, Value value) {
+        public JewelsProtection(String type, Value value) {
             this.type = type;
             this.value = value;
         }
