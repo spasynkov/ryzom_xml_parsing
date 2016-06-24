@@ -652,7 +652,7 @@ public class Character {
     public String toString() {
         return "Character{" +
                 "\n\tapiKey='" + apiKey + '\'' +
-                "\n\tcreated/cashed until: " + DateFormatter.getDateAndTimeInUtc(created) + "/" + DateFormatter.getDateAndTimeInUtc(cashedUntil) +
+                "\n\tcreated/cashed until (in UTC): " + DateFormatter.getShortDateAndTimeInUtc(created * 1000) + " / " + DateFormatter.getShortDateAndTimeInUtc(cashedUntil * 1000) +
                 "\n\tmodules='" + modules + '\'' +
                 "\n\tid=" + id +
                 "\n\tname='" + name + '\'' +
@@ -683,9 +683,9 @@ public class Character {
                 ((headdress != null) ? "\n\theaddress=" + headdress : "") +
                 ((necklace != null) ? "\n\tnecklace=" + necklace : "") +
                 ((position != null) ? "\n\tposition=" + position : "") +
-                ((stats != null) ? "\n\tStats: " + stats : "") +
+                ((stats != null) ? "\n\tstats: " + stats : "") +
                 ((bag != null) ? bag : "") +
-                ((money != null) ? money : "") +
+                ((money != null) ? "\n\tmoney=" + String.format("%,d", money) : "") +
                 ((apartments != null) ? apartments : "") +
                 ((resale != null) ? resale : "") +
                 ((pets != null) ? pets : "") +
