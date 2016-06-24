@@ -1,7 +1,7 @@
-package model;
+package model.values;
 
 /**
- * Class for saving pairs of ingame value and real value
+ * Class for saving pairs of ingame value and real value of crafted items
  */
 public class Value {
     private float inGameValue;

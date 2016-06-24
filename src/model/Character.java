@@ -1,9 +1,12 @@
 package model;
 
+import com.sun.istack.internal.NotNull;
 import exceptions.BagIsNotAvailableException;
 import exceptions.ItemIsNotCraftedException;
 import exceptions.NoSuchEquipmentItemName;
 import exceptions.NoSuchItemInTheBagException;
+import model.values.Scores;
+import model.values.SkillPoints;
 import utils.DateFormatter;
 
 import java.util.List;
@@ -12,14 +15,14 @@ import java.util.List;
  * Represents all character's info
  */
 public class Character {
-    private String apiKey;
+    @NotNull private String apiKey;
     private long created;
     private long cashedUntil;
-    private String modules;
+    @NotNull private String modules;
 
     private int id;
-    private String name;
-    private String shard;
+    @NotNull private String name;
+    @NotNull private String shard;
     private String race;
     private String gender;          // m - male, f - female
     private String title;
@@ -33,6 +36,7 @@ public class Character {
     private CharactersGuild guild;
 
     // equipment
+    private EquipmentItem head;         // helmet
     private EquipmentItem chest;        // vest
     private EquipmentItem legs;         // pants/skirt
     private EquipmentItem feet;         // boots
@@ -56,25 +60,76 @@ public class Character {
 
     private List<Item> bag;
     private Long money;
-    private List<Item> apartments;
+    private Apartments apartments;
     private List<ShopItem> resale;
     private List<Animal> pets;
+
+    private Fame fame;
 
     private SkillsTree skills;
 
     private FactionAndPvpPoints factionAndPvpPoints;
 
-    private Value fightSkillPoints;     // free/spent
-    private Value magicSkillPoints;     // free/spent
-    private Value craftSkillPoints;     // free/spent
-    private Value harvestSkillPoints;   // free/spent
+    private SkillPoints fightSkillPoints;     // spent/free
+    private SkillPoints magicSkillPoints;
+    private SkillPoints craftSkillPoints;
+    private SkillPoints harvestSkillPoints;
 
     private List<Occupation> occupations;
 
     public Character() {
+        apiKey = modules = name = shard = "";   // should not be null
+
     }
 
-    public Character(String apiKey, long created, long cashedUntil, String modules, int id, String name, String shard, String race, String gender, String title, String cult, String civilization, Played played, BodyInfo body, CharactersGuild guild, EquipmentItem chest, EquipmentItem legs, EquipmentItem feet, EquipmentItem arms, EquipmentItem hands, EquipmentItem handl, EquipmentItem handr, EquipmentItem wristl, EquipmentItem wristr, EquipmentItem earl, EquipmentItem earr, EquipmentItem fingerl, EquipmentItem fingerr, EquipmentItem anklel, EquipmentItem ankler, EquipmentItem headdress, EquipmentItem necklace, PositionOnMap position, Stats stats, List<Item> bag, Long money, List<Item> apartments, List<ShopItem> resale, List<Animal> pets, SkillsTree skills, FactionAndPvpPoints factionAndPvpPoints, Value fightSkillPoints, Value magicSkillPoints, Value craftSkillPoints, Value harvestSkillPoints, List<Occupation> occupations) {
+    public Character(String apiKey,
+                     long created,
+                     long cashedUntil,
+                     String modules,
+                     int id,
+                     String name,
+                     String shard,
+                     String race,
+                     String gender,
+                     String title,
+                     String cult,
+                     String civilization,
+                     Played played,
+                     BodyInfo body,
+                     CharactersGuild guild,
+                     EquipmentItem head,
+                     EquipmentItem chest,
+                     EquipmentItem legs,
+                     EquipmentItem feet,
+                     EquipmentItem arms,
+                     EquipmentItem hands,
+                     EquipmentItem handl,
+                     EquipmentItem handr,
+                     EquipmentItem wristl,
+                     EquipmentItem wristr,
+                     EquipmentItem earl,
+                     EquipmentItem earr,
+                     EquipmentItem fingerl,
+                     EquipmentItem fingerr,
+                     EquipmentItem anklel,
+                     EquipmentItem ankler,
+                     EquipmentItem headdress,
+                     EquipmentItem necklace,
+                     PositionOnMap position,
+                     Stats stats,
+                     List<Item> bag,
+                     Long money,
+                     Apartments apartments,
+                     List<ShopItem> resale,
+                     List<Animal> pets,
+                     Fame fame,
+                     SkillsTree skills,
+                     FactionAndPvpPoints factionAndPvpPoints,
+                     SkillPoints fightSkillPoints,
+                     SkillPoints magicSkillPoints,
+                     SkillPoints craftSkillPoints,
+                     SkillPoints harvestSkillPoints,
+                     List<Occupation> occupations) {
         this.apiKey = apiKey;
         this.created = created;
         this.cashedUntil = cashedUntil;
@@ -90,6 +145,7 @@ public class Character {
         this.played = played;
         this.body = body;
         this.guild = guild;
+        this.head = head;
         this.chest = chest;
         this.legs = legs;
         this.feet = feet;
@@ -114,6 +170,7 @@ public class Character {
         this.apartments = apartments;
         this.resale = resale;
         this.pets = pets;
+        this.fame = fame;
         this.skills = skills;
         this.factionAndPvpPoints = factionAndPvpPoints;
         this.fightSkillPoints = fightSkillPoints;
@@ -121,6 +178,95 @@ public class Character {
         this.craftSkillPoints = craftSkillPoints;
         this.harvestSkillPoints = harvestSkillPoints;
         this.occupations = occupations;
+    }
+
+    public void addEquipmentItem(String equipmentItemName, int slot) throws BagIsNotAvailableException, NoSuchItemInTheBagException, NoSuchEquipmentItemName, ItemIsNotCraftedException {
+        if (bag != null) throw new BagIsNotAvailableException("Can't get access to character's bag. Try to set bag before, or use addEquipmentItem(String equipmentItemName, int slot, int quality, int color) method to add item manually");
+        EquipmentItem item = new EquipmentItem((short)slot);
+        setEquipmentItemByName(equipmentItemName, item);
+    }
+
+    public void addEquipmentItem(String equipmentItemName, int slot, int quality, int color) throws NoSuchEquipmentItemName {
+        EquipmentItem item = new EquipmentItem((short)slot, (short)quality, ItemsColors.getColorById((byte)color));
+        setEquipmentItemByName(equipmentItemName, item);
+    }
+
+    private void setEquipmentItemByName(String equipmentItemName, EquipmentItem item) throws NoSuchEquipmentItemName {
+        switch (equipmentItemName) {
+            case "head" : {
+                this.head = item;
+                break;
+            }
+            case "chest" : {
+                this.chest = item;
+                break;
+            }
+            case "legs" : {
+                this.legs = item;
+                break;
+            }
+            case "feet" : {
+                this.feet = item;
+                break;
+            }
+            case "arms" : {
+                this.arms = item;
+                break;
+            }
+            case "hands" : {
+                this.hands = item;
+                break;
+            }
+            case "handl" : {
+                this.handl = item;
+                break;
+            }
+            case "handr" : {
+                this.handr = item;
+                break;
+            }
+            case "wristl" : {
+                this.wristl = item;
+                break;
+            }
+            case "wristr" : {
+                this.wristr = item;
+                break;
+            }
+            case "earl" : {
+                this.earl = item;
+                break;
+            }
+            case "earr" : {
+                this.earr = item;
+                break;
+            }
+            case "fingerl" : {
+                this.fingerl = item;
+                break;
+            }
+            case "fingerr" : {
+                this.fingerr = item;
+                break;
+            }
+            case "anklel" : {
+                this.anklel = item;
+                break;
+            }
+            case "ankler" : {
+                this.ankler = item;
+                break;
+            }
+            case "headdress" : {
+                this.headdress = item;
+                break;
+            }
+            case "necklace" : {
+                this.necklace = item;
+                break;
+            }
+            default: throw new NoSuchEquipmentItemName("Can't find eqipment item with name: " + equipmentItemName + ". Check spelling please.");
+        }
     }
 
     public String getApiKey() {
@@ -225,6 +371,30 @@ public class Character {
 
     public void setPlayed(Played played) {
         this.played = played;
+    }
+
+    public BodyInfo getBody() {
+        return body;
+    }
+
+    public void setBody(BodyInfo body) {
+        this.body = body;
+    }
+
+    public CharactersGuild getGuild() {
+        return guild;
+    }
+
+    public void setGuild(CharactersGuild guild) {
+        this.guild = guild;
+    }
+
+    public EquipmentItem getHead() {
+        return head;
+    }
+
+    public void setHead(EquipmentItem head) {
+        this.head = head;
     }
 
     public EquipmentItem getChest() {
@@ -371,6 +541,14 @@ public class Character {
         this.position = position;
     }
 
+    public Stats getStats() {
+        return stats;
+    }
+
+    public void setStats(Stats stats) {
+        this.stats = stats;
+    }
+
     public List<Item> getBag() {
         return bag;
     }
@@ -387,11 +565,11 @@ public class Character {
         this.money = money;
     }
 
-    public List<Item> getApartments() {
+    public Apartments getApartments() {
         return apartments;
     }
 
-    public void setApartments(List<Item> apartments) {
+    public void setApartments(Apartments apartments) {
         this.apartments = apartments;
     }
 
@@ -411,6 +589,14 @@ public class Character {
         this.pets = pets;
     }
 
+    public Fame getFame() {
+        return fame;
+    }
+
+    public void setFame(Fame fame) {
+        this.fame = fame;
+    }
+
     public SkillsTree getSkills() {
         return skills;
     }
@@ -419,35 +605,43 @@ public class Character {
         this.skills = skills;
     }
 
-    public Value getFightSkillPoints() {
+    public FactionAndPvpPoints getFactionAndPvpPoints() {
+        return factionAndPvpPoints;
+    }
+
+    public void setFactionAndPvpPoints(FactionAndPvpPoints factionAndPvpPoints) {
+        this.factionAndPvpPoints = factionAndPvpPoints;
+    }
+
+    public SkillPoints getFightSkillPoints() {
         return fightSkillPoints;
     }
 
-    public void setFightSkillPoints(Value fightSkillPoints) {
+    public void setFightSkillPoints(SkillPoints fightSkillPoints) {
         this.fightSkillPoints = fightSkillPoints;
     }
 
-    public Value getMagicSkillPoints() {
+    public SkillPoints getMagicSkillPoints() {
         return magicSkillPoints;
     }
 
-    public void setMagicSkillPoints(Value magicSkillPoints) {
+    public void setMagicSkillPoints(SkillPoints magicSkillPoints) {
         this.magicSkillPoints = magicSkillPoints;
     }
 
-    public Value getCraftSkillPoints() {
+    public SkillPoints getCraftSkillPoints() {
         return craftSkillPoints;
     }
 
-    public void setCraftSkillPoints(Value craftSkillPoints) {
+    public void setCraftSkillPoints(SkillPoints craftSkillPoints) {
         this.craftSkillPoints = craftSkillPoints;
     }
 
-    public Value getHarvestSkillPoints() {
+    public SkillPoints getHarvestSkillPoints() {
         return harvestSkillPoints;
     }
 
-    public void setHarvestSkillPoints(Value harvestSkillPoints) {
+    public void setHarvestSkillPoints(SkillPoints harvestSkillPoints) {
         this.harvestSkillPoints = harvestSkillPoints;
     }
 
@@ -457,91 +651,6 @@ public class Character {
 
     public void setOccupations(List<Occupation> occupations) {
         this.occupations = occupations;
-    }
-
-    public void addEquipmentItem(String equipmentItemName, int slot) throws BagIsNotAvailableException, NoSuchItemInTheBagException, NoSuchEquipmentItemName, ItemIsNotCraftedException {
-        if (bag != null) throw new BagIsNotAvailableException("Can't get access to character's bag. Try to set bag before, or use addEquipmentItem(String equipmentItemName, int slot, int quality, int color) method to add item manually");
-        EquipmentItem item = new EquipmentItem((short)slot);
-        setEquipmentItemByName(equipmentItemName, item);
-    }
-
-    public void addEquipmentItem(String equipmentItemName, int slot, int quality, int color) throws NoSuchEquipmentItemName {
-        EquipmentItem item = new EquipmentItem((short)slot, (short)quality, ItemsColors.getColorById((byte)color));
-        setEquipmentItemByName(equipmentItemName, item);
-    }
-
-    private void setEquipmentItemByName(String equipmentItemName, EquipmentItem item) throws NoSuchEquipmentItemName {
-        switch (equipmentItemName) {
-            case "chest" : {
-                this.chest = item;
-                break;
-            }
-            case "legs" : {
-                this.legs = item;
-                break;
-            }
-            case "feet" : {
-                this.feet = item;
-                break;
-            }
-            case "arms" : {
-                this.arms = item;
-                break;
-            }
-            case "hands" : {
-                this.hands = item;
-                break;
-            }
-            case "handl" : {
-                this.handl = item;
-                break;
-            }
-            case "handr" : {
-                this.handr = item;
-                break;
-            }
-            case "wristl" : {
-                this.wristl = item;
-                break;
-            }
-            case "wristr" : {
-                this.wristr = item;
-                break;
-            }
-            case "earl" : {
-                this.earl = item;
-                break;
-            }
-            case "earr" : {
-                this.earr = item;
-                break;
-            }
-            case "fingerl" : {
-                this.fingerl = item;
-                break;
-            }
-            case "fingerr" : {
-                this.fingerr = item;
-                break;
-            }
-            case "anklel" : {
-                this.anklel = item;
-                break;
-            }
-            case "ankler" : {
-                this.ankler = item;
-                break;
-            }
-            case "headdress" : {
-                this.headdress = item;
-                break;
-            }
-            case "necklace" : {
-                this.necklace = item;
-                break;
-            }
-            default: throw new NoSuchEquipmentItemName("Can't find eqipment item with name: " + equipmentItemName + ". Check spelling please.");
-        }
     }
 
     @Override
@@ -565,6 +674,9 @@ public class Character {
         if (civilization != null ? !civilization.equals(character.civilization) : character.civilization != null)
             return false;
         if (played != null ? !played.equals(character.played) : character.played != null) return false;
+        if (body != null ? !body.equals(character.body) : character.body != null) return false;
+        if (guild != null ? !guild.equals(character.guild) : character.guild != null) return false;
+        if (head != null ? !head.equals(character.head) : character.head != null) return false;
         if (chest != null ? !chest.equals(character.chest) : character.chest != null) return false;
         if (legs != null ? !legs.equals(character.legs) : character.legs != null) return false;
         if (feet != null ? !feet.equals(character.feet) : character.feet != null) return false;
@@ -583,12 +695,16 @@ public class Character {
         if (headdress != null ? !headdress.equals(character.headdress) : character.headdress != null) return false;
         if (necklace != null ? !necklace.equals(character.necklace) : character.necklace != null) return false;
         if (position != null ? !position.equals(character.position) : character.position != null) return false;
+        if (stats != null ? !stats.equals(character.stats) : character.stats != null) return false;
         if (bag != null ? !bag.equals(character.bag) : character.bag != null) return false;
         if (money != null ? !money.equals(character.money) : character.money != null) return false;
         if (apartments != null ? !apartments.equals(character.apartments) : character.apartments != null) return false;
         if (resale != null ? !resale.equals(character.resale) : character.resale != null) return false;
         if (pets != null ? !pets.equals(character.pets) : character.pets != null) return false;
+        if (fame != null ? !fame.equals(character.fame) : character.fame != null) return false;
         if (skills != null ? !skills.equals(character.skills) : character.skills != null) return false;
+        if (factionAndPvpPoints != null ? !factionAndPvpPoints.equals(character.factionAndPvpPoints) : character.factionAndPvpPoints != null)
+            return false;
         if (fightSkillPoints != null ? !fightSkillPoints.equals(character.fightSkillPoints) : character.fightSkillPoints != null)
             return false;
         if (magicSkillPoints != null ? !magicSkillPoints.equals(character.magicSkillPoints) : character.magicSkillPoints != null)
@@ -616,6 +732,9 @@ public class Character {
         result = 31 * result + (cult != null ? cult.hashCode() : 0);
         result = 31 * result + (civilization != null ? civilization.hashCode() : 0);
         result = 31 * result + (played != null ? played.hashCode() : 0);
+        result = 31 * result + (body != null ? body.hashCode() : 0);
+        result = 31 * result + (guild != null ? guild.hashCode() : 0);
+        result = 31 * result + (head != null ? head.hashCode() : 0);
         result = 31 * result + (chest != null ? chest.hashCode() : 0);
         result = 31 * result + (legs != null ? legs.hashCode() : 0);
         result = 31 * result + (feet != null ? feet.hashCode() : 0);
@@ -634,12 +753,15 @@ public class Character {
         result = 31 * result + (headdress != null ? headdress.hashCode() : 0);
         result = 31 * result + (necklace != null ? necklace.hashCode() : 0);
         result = 31 * result + (position != null ? position.hashCode() : 0);
+        result = 31 * result + (stats != null ? stats.hashCode() : 0);
         result = 31 * result + (bag != null ? bag.hashCode() : 0);
         result = 31 * result + (money != null ? money.hashCode() : 0);
         result = 31 * result + (apartments != null ? apartments.hashCode() : 0);
         result = 31 * result + (resale != null ? resale.hashCode() : 0);
         result = 31 * result + (pets != null ? pets.hashCode() : 0);
+        result = 31 * result + (fame != null ? fame.hashCode() : 0);
         result = 31 * result + (skills != null ? skills.hashCode() : 0);
+        result = 31 * result + (factionAndPvpPoints != null ? factionAndPvpPoints.hashCode() : 0);
         result = 31 * result + (fightSkillPoints != null ? fightSkillPoints.hashCode() : 0);
         result = 31 * result + (magicSkillPoints != null ? magicSkillPoints.hashCode() : 0);
         result = 31 * result + (craftSkillPoints != null ? craftSkillPoints.hashCode() : 0);
@@ -665,6 +787,7 @@ public class Character {
                 ((played != null) ? "\n\tplayed=" + played : "") +
                 ((body != null) ? body : "") +
                 ((guild != null) ? guild : "") +
+                ((head != null) ? "\n\thead=" + head : "") +
                 ((chest != null) ? "\n\tchest=" + chest : "") +
                 ((legs != null) ? "\n\tlegs=" + legs : "") +
                 ((feet != null) ? "\n\tfeet=" + feet : "") +
@@ -689,6 +812,7 @@ public class Character {
                 ((apartments != null) ? apartments : "") +
                 ((resale != null) ? resale : "") +
                 ((pets != null) ? pets : "") +
+                ((fame != null) ? fame : "") +
                 ((skills != null) ? skills : "") +
                 ((factionAndPvpPoints != null) ? factionAndPvpPoints : "") +
                 ((fightSkillPoints != null) ? ", fightSkillPoints=" + fightSkillPoints : "") +
@@ -767,7 +891,7 @@ public class Character {
                     "}\n";
         }
     }
-    
+
     public class Stats {
         // stats
         private short constitution;
@@ -779,15 +903,15 @@ public class Character {
         private short dexterity;
         private short will;
 
-        private Value hp;           // base/real
-        private Value stamina;      // base/real
-        private Value sap;          // base/real
-        private Value focus;        // base/real
+        private Scores hp;           // base/real
+        private Scores stamina;      // base/real
+        private Scores sap;          // base/real
+        private Scores focus;        // base/real
 
         public Stats() {
         }
 
-        public Stats(int constitution, int metabolism, int intelligence, int wisdom, int strength, int balance, int dexterity, int will, Value hp, Value stamina, Value sap, Value focus) {
+        public Stats(int constitution, int metabolism, int intelligence, int wisdom, int strength, int balance, int dexterity, int will, Scores hp, Scores stamina, Scores sap, Scores focus) {
             this.constitution = (short) constitution;
             this.metabolism = (short) metabolism;
             this.intelligence = (short) intelligence;
@@ -813,7 +937,7 @@ public class Character {
             this.will = (short) will;
         }
 
-        public void setBars(Value hp, Value stamina, Value sap, Value focus) {
+        public void setBars(Scores hp, Scores stamina, Scores sap, Scores focus) {
             this.hp = hp;
             this.stamina = stamina;
             this.sap = sap;
@@ -884,35 +1008,35 @@ public class Character {
             this.will = will;
         }
 
-        public Value getHp() {
+        public Scores getHp() {
             return hp;
         }
 
-        public void setHp(Value hp) {
+        public void setHp(Scores hp) {
             this.hp = hp;
         }
 
-        public Value getStamina() {
+        public Scores getStamina() {
             return stamina;
         }
 
-        public void setStamina(Value stamina) {
+        public void setStamina(Scores stamina) {
             this.stamina = stamina;
         }
 
-        public Value getSap() {
+        public Scores getSap() {
             return sap;
         }
 
-        public void setSap(Value sap) {
+        public void setSap(Scores sap) {
             this.sap = sap;
         }
 
-        public Value getFocus() {
+        public Scores getFocus() {
             return focus;
         }
 
-        public void setFocus(Value focus) {
+        public void setFocus(Scores focus) {
             this.focus = focus;
         }
 

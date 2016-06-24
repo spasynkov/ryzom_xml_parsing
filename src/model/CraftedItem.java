@@ -1,5 +1,7 @@
 package model;
 
+import model.values.Value;
+
 /**
  * Represents crafting characteristics of some item
  */
