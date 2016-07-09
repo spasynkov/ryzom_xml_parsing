@@ -33,7 +33,13 @@ public class Main {
         character.setId(Integer.parseInt(xml.getElementsByTagName("id").item(0).getTextContent()));
         character.setName(xml.getElementsByTagName("name").item(0).getTextContent());
         character.setShard(xml.getElementsByTagName("shard").item(0).getTextContent());
-        character.setMoney(Long.parseLong(xml.getElementsByTagName("money").item(0).getTextContent()));
+
+        String modules = character.getModules();
+        // TODO: process more modules
+        if (modules.contains("C04")) {
+            // TODO: add bag
+            character.setMoney(Long.parseLong(xml.getElementsByTagName("money").item(0).getTextContent()));
+        }
 
         return character;
     }
